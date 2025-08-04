@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facebook Page Testing Flow</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        .step-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: none;
+        }
+        .step-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+        .step-number {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .alert {
+            border-radius: 10px;
+            border: none;
+        }
+        .post-preview {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 4px solid #667eea;
+        }
+        .status-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .status-draft { background: #fff3cd; color: #856404; }
+        .status-published { background: #d4edda; color: #155724; }
+        .loading {
+            display: none;
+        }
+        .loading.show {
+            display: inline-block;
+        }
+        .facebook-icon {
+            color: #1877f2;
+        }
+        .success-animation {
+            animation: successPulse 0.6s ease-in-out;
+        }
+        @keyframes successPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Style for the datetime-local input */
+        #postDateTime {
+            font-size: 1rem;
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            border: 1px solid #ced4da;
+            background-color: #fff;
+            color: #495057;
+            width: 100%;
+        }
+
+        /* Add hover effect for the input */
+        #postDateTime:hover {
+            border-color: #5c636a;
+        }
+
+        /* Focused input styling */
+        #postDateTime:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.25rem rgba(38, 143, 255, 0.5);
+        }
+
+        /* The date picker calendar popup styling */
+        input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+            background-color: #007bff;
+            border-radius: 50%;
+            padding: 5px;
+            cursor: pointer;
+        }
+
+        /* Styling the input's dropdown (calendar popup) */
+        input[type="datetime-local"]:focus::-webkit-calendar-picker-indicator {
+            background-color: #0056b3;
+        }
+
+        /* For better visibility on the calendar date */
+        input[type="datetime-local"]::-webkit-datetime-edit {
+            background-color: #f8f9fa;
+            color: #495057;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <div class="main-container p-5">
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold text-primary mb-3">
+                    <i class="fab fa-facebook facebook-icon me-3"></i>
+                    Facebook Page Testing Flow
+                </h1>
+                <p class="lead text-muted">Test your Facebook page integration with AI-generated content</p>
+            </div>
+
+            <!-- Step 1: Connect Facebook Page -->
+            <div class="step-card p-4 mb-4">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="step-number">1</div>
+                    <h3 class="mb-0 ms-3">Connect Facebook Page</h3>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="pageId" class="form-label fw-bold">Page ID</label>
+                            <input type="text" class="form-control" id="pageId" placeholder="Enter your Facebook Page ID">
+                            <div class="form-text">Find your Page ID in Page Settings > General</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="accessToken" class="form-label fw-bold">Access Token</label>
+                            <input type="password" class="form-control" id="accessToken" placeholder="Enter your Page Access Token">
+                            <div class="form-text">Generate from Facebook Developer Console</div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="connectPage()">
+                    <i class="fas fa-link me-2"></i>
+                    Connect Page
+                    <span class="loading ms-2">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </span>
+                </button>
+                <div id="connectResult" class="mt-3"></div>
+            </div>
+
+            <!-- Step 2: Generate AI Content -->
+            <div class="step-card p-4 mb-4">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="step-number">2</div>
+                    <h3 class="mb-0 ms-3">Generate AI Content</h3>
+                </div>
+                
+                <!-- Content Generation Method Toggle -->
+                <div class="mb-4">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="generationMethod" id="simpleMethod" value="simple" checked>
+                        <label class="form-check-label" for="simpleMethod">
+                            <strong>Simple Mode</strong> (Basic parameters)
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="generationMethod" id="advancedMethod" value="advanced">
+                        <label class="form-check-label" for="advancedMethod">
+                            <strong>Advanced Mode</strong> (Business profile)
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="generationMethod" id="enhancedMethod" value="enhanced">
+                        <label class="form-check-label" for="enhancedMethod">
+                            <strong>Enhanced Mode</strong> (Industry news + templates)
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Simple Mode -->
+                <div id="simpleMode">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="industry" class="form-label fw-bold">Industry</label>
+                                <select class="form-select" id="industry">
+                                    <option value="fitness">Fitness & Wellness</option>
+                                    <option value="beauty">Beauty & Salon</option>
+                                    <option value="healthcare">Healthcare</option>
+                                    <option value="tech">Technology</option>
+                                    <option value="finance">Finance</option>
+                                    <option value="food">Food & Restaurant</option>
+                                    <option value="education">Education</option>
+                                    <option value="general">General</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="tone" class="form-label fw-bold">Tone</label>
+                                <select class="form-select" id="tone">
+                                    <option value="professional">Professional</option>
+                                    <option value="casual">Casual</option>
+                                    <option value="friendly">Friendly</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="contentType" class="form-label fw-bold">Content Type</label>
+                                <select class="form-select" id="contentType">
+                                    <option value="trending">Trending</option>
+                                    <option value="industry">Industry Insights</option>
+                                    <option value="general">General</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Advanced Mode -->
+                <div id="advancedMode" style="display: none;">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="businessName" class="form-label fw-bold">Business Name</label>
+                                <input type="text" class="form-control" id="businessName" placeholder="Enter your business name">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="businessIndustry" class="form-label fw-bold">Business Industry</label>
+                                <select class="form-select" id="businessIndustry">
+                                    <option value="fitness">Fitness & Wellness</option>
+                                    <option value="beauty">Beauty & Salon</option>
+                                    <option value="healthcare">Healthcare</option>
+                                    <option value="tech">Technology</option>
+                                    <option value="finance">Finance</option>
+                                    <option value="food">Food & Restaurant</option>
+                                    <option value="education">Education</option>
+                                    <option value="general">General</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="businessServices" class="form-label fw-bold">Services (comma-separated)</label>
+                                <input type="text" class="form-control" id="businessServices" placeholder="e.g., Personal Training, Yoga, Gym Memberships">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="businessTone" class="form-label fw-bold">Tone</label>
+                                <select class="form-select" id="businessTone">
+                                    <option value="professional">Professional</option>
+                                    <option value="casual">Casual</option>
+                                    <option value="friendly">Friendly</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="businessPostType" class="form-label fw-bold">Post Type</label>
+                                <select class="form-select" id="businessPostType">
+                                    <option value="trending">Trending</option>
+                                    <option value="industry">Industry Insights</option>
+                                    <option value="promotional">Promotional</option>
+                                    <option value="educational">Educational</option>
+                                    <option value="general">General</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="businessFrequency" class="form-label fw-bold">Post Frequency</label>
+                                <select class="form-select" id="businessFrequency">
+                                    <option value="1">Daily</option>
+                                    <option value="3" selected>3 times per week</option>
+                                    <option value="5">5 times per week</option>
+                                    <option value="7">Weekly</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enhanced Mode -->
+                <div id="enhancedMode" style="display: none;">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="enhancedBusinessName" class="form-label fw-bold">Business Name</label>
+                                <input type="text" class="form-control" id="enhancedBusinessName" placeholder="Enter your business name">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="enhancedIndustry" class="form-label fw-bold">Industry</label>
+                                <select class="form-select" id="enhancedIndustry">
+                                    <option value="Fitness">Fitness & Wellness</option>
+                                    <option value="Beauty">Beauty & Salon</option>
+                                    <option value="Healthcare">Healthcare</option>
+                                    <option value="Technology">Technology</option>
+                                    <option value="Finance">Finance</option>
+                                    <option value="Food & Beverage">Food & Restaurant</option>
+                                    <option value="Education">Education</option>
+                                    <option value="General">General</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="enhancedServices" class="form-label fw-bold">Services (comma-separated)</label>
+                                <input type="text" class="form-control" id="enhancedServices" placeholder="e.g., Personal Training, Yoga, Gym Memberships">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="enhancedTone" class="form-label fw-bold">Tone</label>
+                                <select class="form-select" id="enhancedTone">
+                                    <option value="professional">Professional</option>
+                                    <option value="witty">Witty</option>
+                                    <option value="friendly">Friendly</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="enhancedPostType" class="form-label fw-bold">Post Type</label>
+                                <select class="form-select" id="enhancedPostType">
+                                    <option value="promo">Promotional</option>
+                                    <option value="tip">Business Tips</option>
+                                    <option value="update">Company Updates</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="enhancedFrequency" class="form-label fw-bold">Post Frequency</label>
+                                <select class="form-select" id="enhancedFrequency">
+                                    <option value="1">1 post</option>
+                                    <option value="3" selected>3 posts</option>
+                                    <option value="5">5 posts</option>
+                                    <option value="7">7 posts</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" onclick="generatePost()">
+                    <i class="fas fa-magic me-2"></i>
+                    Generate Content
+                    <span class="loading ms-2">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </span>
+                </button>
+                <div id="generateResult" class="mt-3"></div>
+            </div>
+
+            <!-- Step 2.5: Business Analysis (Optional) -->
+            <div class="step-card p-4 mb-4">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="step-number">2.5</div>
+                    <h3 class="mb-0 ms-3">Business Analysis (Optional)</h3>
+                </div>
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="mb-3">
+                            <label for="businessUrl" class="form-label fw-bold">Business Website URL</label>
+                            <input type="url" class="form-control" id="businessUrl" placeholder="https://example.com">
+                            <div class="form-text">Enter a business website to automatically analyze and extract business profile</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">&nbsp;</label>
+                            <button class="btn btn-outline-primary w-100" onclick="analyzeBusiness()">
+                                <i class="fas fa-search me-2"></i>
+                                Analyze Website
+                                <span class="loading ms-2">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div id="businessAnalysisResult" class="mt-3"></div>
+            </div>
+
+            <!-- Step 2.6: Industry News -->
+            <div class="step-card p-4 mb-4">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="step-number">2.6</div>
+                    <h3 class="mb-0 ms-3">Industry News</h3>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="newsIndustry" class="form-label fw-bold">Industry for News</label>
+                            <input type="text" class="form-control" id="newsIndustry" placeholder="e.g., technology, healthcare, finance">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">&nbsp;</label>
+                            <button class="btn btn-outline-info w-100" onclick="getIndustryNews()">
+                                <i class="fas fa-newspaper me-2"></i>
+                                Get News Headlines
+                                <span class="loading ms-2">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div id="newsResult" class="mt-3"></div>
+            </div>
+
+            <!-- Step 2.7: Weekly Planner -->
+            <div class="step-card p-4 mb-4">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="step-number">2.7</div>
+                    <h3 class="mb-0 ms-3">Weekly Planner</h3>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="weeklyPosts" class="form-label fw-bold">Posts (one per line)</label>
+                            <textarea class="form-control" id="weeklyPosts" rows="4" placeholder="Enter your posts here, one per line..."></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="postFrequency" class="form-label fw-bold">Post Frequency</label>
+                            <select class="form-select" id="postFrequency">
+                                <option value="3">3 times per week</option>
+                                <option value="5">5 times per week</option>
+                                <option value="7">Daily</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="preferredDays" class="form-label fw-bold">Preferred Days (optional)</label>
+                            <select class="form-select" id="preferredDays" multiple>
+                                <option value="monday">Monday</option>
+                                <option value="tuesday">Tuesday</option>
+                                <option value="wednesday">Wednesday</option>
+                                <option value="thursday">Thursday</option>
+                                <option value="friday">Friday</option>
+                                <option value="saturday">Saturday</option>
+                                <option value="sunday">Sunday</option>
+                            </select>
+                            <div class="form-text">Hold Ctrl/Cmd to select multiple days</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <button class="btn btn-outline-success" onclick="createWeeklySchedule()">
+                            <i class="fas fa-calendar-alt me-2"></i>
+                            Create Weekly Schedule
+                            <span class="loading ms-2">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </span>
+                        </button>
+                    </div>
+                    <div class="col-md-6">
+                        <button class="btn btn-outline-secondary" onclick="getWeeklySchedule()">
+                            <i class="fas fa-eye me-2"></i>
+                            View Current Schedule
+                        </button>
+                    </div>
+                </div>
+                <div id="weeklyPlannerResult" class="mt-3"></div>
+            </div>
+
+                        <!-- Step 3: Preview & Edit -->
+            <div class="step-card p-4 mb-4" id="previewSection" style="display: none;">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="step-number">3</div>
+                    <h3 class="mb-0 ms-3">Preview & Edit</h3>
+                </div>
+                <div class="post-preview mb-3">
+                    <h5 class="mb-2">Generated Content Preview:</h5>
+                    <div id="postContent" class="border rounded p-3 bg-white"></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="mb-3">
+                            <label for="editContent" class="form-label fw-bold">Edit Content</label>
+                            <textarea class="form-control" id="editContent" rows="4" placeholder="Edit the generated content here..."></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="postImage" class="form-label fw-bold">Add Photo (Optional)</label>
+                            <input type="file" class="form-control" id="postImage" accept="image/*">
+                            <div class="form-text">Upload an image to include with your post</div>
+                        </div>
+                        <div id="imagePreview" class="mb-3" style="display: none;">
+                            <img id="previewImg" src="" alt="Preview" class="img-fluid rounded" style="max-height: 150px;">
+                            <button type="button" class="btn btn-sm btn-outline-danger mt-2" onclick="removeImage()">
+                                <i class="fas fa-trash me-1"></i>Remove Image
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <button class="btn btn-primary me-2" onclick="updatePost()">
+                            <i class="fas fa-save me-2"></i>
+                            Save Changes
+                        </button>
+                    </div>
+                    <div class="col-md-6">
+                        <button class="btn btn-success" onclick="publishPost()">
+                            <i class="fab fa-facebook me-2"></i>
+                            Publish to Facebook
+                            <span class="loading ms-2">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+                <div id="publishResult" class="mt-3"></div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="postDateTime" class="form-label fw-bold">Select Date & Time</label>
+                            <input type="datetime-local" id="postDateTime" class="form-control" />
+                            <div class="form-text">Select the date and time for the post (Facebook Requirement: Minimum gap of 10 mins from current time for scheduling)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Results & Validation -->
+            <div class="step-card p-4 mb-4" id="resultsSection" style="display: none;">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="step-number">4</div>
+                    <h3 class="mb-0 ms-3">Results & Validation</h3>
+                </div>
+                <div id="publishSuccess" class="alert alert-success">
+                    <h5><i class="fas fa-check-circle me-2"></i>Post Published/Scheduled Successfully!</h5>
+                    <p class="mb-2">Your post has been Published/Scheduled to your Facebook page.</p>
+                    <a id="fbPostLink" href="#" target="_blank" class="btn btn-outline-primary btn-sm">
+                        <i class="fab fa-facebook me-2"></i>View on Facebook
+                    </a>
+                </div>
+                <div class="mt-4">
+                    <h6 class="fw-bold">Validation Checklist:</h6>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex align-items-center">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Post appears on Facebook page
+                        </li>
+                        <li class="list-group-item d-flex align-items-center">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Content matches generated tone and industry
+                        </li>
+                        <li class="list-group-item d-flex align-items-center">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Timing and formatting are correct
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Connected Pages Status -->
+            <div class="step-card p-4">
+                <h4><i class="fas fa-info-circle me-2"></i>System Status</h4>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Connected Pages</h5>
+                                <p class="card-text" id="connectedPagesCount">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Generated Posts</h5>
+                                <p class="card-text" id="generatedPostsCount">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Published Posts</h5>
+                                <p class="card-text" id="publishedPostsCount">0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentPostId = null;
+        let connectedPageId = null;
+
+        // Connect Facebook Page
+        async function connectPage() {
+            const pageId = document.getElementById('pageId').value;
+            const accessToken = document.getElementById('accessToken').value;
+            const resultDiv = document.getElementById('connectResult');
+            const button = event.target;
+            const loading = button.querySelector('.loading');
+
+            if (!pageId || !accessToken) {
+                showAlert(resultDiv, 'Please enter both Page ID and Access Token', 'danger');
+                return;
+            }
+
+            try {
+                loading.classList.add('show');
+                button.disabled = true;
+
+                const response = await fetch('/api/connect-page', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ page_id: pageId, access_token: accessToken })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    connectedPageId = pageId;
+                    showAlert(resultDiv, `Successfully connected to ${data.page_name}!`, 'success');
+                    updateStatusCounts();
+                } else {
+                    showAlert(resultDiv, data.error || 'Failed to connect page', 'danger');
+                }
+            } catch (error) {
+                showAlert(resultDiv, 'Network error. Please try again.', 'danger');
+            } finally {
+                loading.classList.remove('show');
+                button.disabled = false;
+            }
+        }
+
+        // Generate AI Post Content
+        async function generatePost() {
+            const resultDiv = document.getElementById('generateResult');
+            const button = event.target;
+            const loading = button.querySelector('.loading');
+            const generationMethod = document.querySelector('input[name="generationMethod"]:checked').value;
+
+            // Make Facebook connection optional for all modes
+            if (generationMethod !== 'enhanced' && !connectedPageId) {
+                showAlert(resultDiv, 'Facebook connection is optional. You can still generate content without connecting a page.', 'info');
+            }
+
+            try {
+                loading.classList.add('show');
+                button.disabled = true;
+
+                let requestData = {};
+                
+                // Only add page_id if connected
+                if (connectedPageId) {
+                    requestData.page_id = connectedPageId;
+                }
+
+                if (generationMethod === 'simple') {
+                    // Simple mode - basic parameters
+                    requestData.industry = document.getElementById('industry').value;
+                    requestData.tone = document.getElementById('tone').value;
+                    requestData.content_type = document.getElementById('contentType').value;
+
+                    const response = await fetch('/api/generate-post', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(requestData)
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        currentPostId = data.post_id;
+                        document.getElementById('postContent').textContent = data.content;
+                        document.getElementById('editContent').value = data.content;
+                        document.getElementById('previewSection').style.display = 'block';
+                        showAlert(resultDiv, 'Content generated successfully!', 'success');
+                        updateStatusCounts();
+                    } else {
+                        showAlert(resultDiv, data.error || 'Failed to generate content', 'danger');
+                    }
+                } else if (generationMethod === 'advanced') {
+                    // Advanced mode - business profile
+                    const businessProfile = {
+                        name: document.getElementById('businessName').value || 'Test Business',
+                        industry: document.getElementById('businessIndustry').value,
+                        services: document.getElementById('businessServices').value.split(',').map(s => s.trim()).filter(s => s)
+                    };
+
+                    const postPreferences = {
+                        tone: document.getElementById('businessTone').value,
+                        post_type: document.getElementById('businessPostType').value,
+                        frequency: parseInt(document.getElementById('businessFrequency').value)
+                    };
+
+                    requestData.business_profile = businessProfile;
+                    requestData.post_preferences = postPreferences;
+
+                    const response = await fetch('/api/generate-content-integrated', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(requestData)
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        currentPostId = data.post_id;
+                        document.getElementById('postContent').textContent = data.content;
+                        document.getElementById('editContent').value = data.content;
+                        document.getElementById('previewSection').style.display = 'block';
+                        showAlert(resultDiv, 'Content generated successfully using business profile!', 'success');
+                        updateStatusCounts();
+                    } else {
+                        showAlert(resultDiv, data.error || 'Failed to generate content', 'danger');
+                    }
+                } else if (generationMethod === 'enhanced') {
+                    // Enhanced mode - industry news + templates
+                    const enhancedProfile = {
+                        name: document.getElementById('enhancedBusinessName').value || 'Test Business',
+                        industry: document.getElementById('enhancedIndustry').value,
+                        services: document.getElementById('enhancedServices').value.split(',').map(s => s.trim()).filter(s => s)
+                    };
+
+                    const enhancedPreferences = {
+                        tone: document.getElementById('enhancedTone').value,
+                        post_type: document.getElementById('enhancedPostType').value,
+                        frequency: parseInt(document.getElementById('enhancedFrequency').value)
+                    };
+
+                    requestData.business_profile = enhancedProfile;
+                    requestData.post_preferences = enhancedPreferences;
+
+                    const response = await fetch('/api/generate-content-standalone', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(requestData)
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        // Enhanced mode returns multiple posts
+                        if (data.posts && data.posts.length > 0) {
+                            const postsHtml = data.posts.map((post, index) => `
+                                <div class="mb-3 p-3 border rounded bg-light">
+                                    <strong>Post ${index + 1}:</strong><br>
+                                    ${post}
+                                </div>
+                            `).join('');
+                            
+                            document.getElementById('postContent').innerHTML = postsHtml;
+                            document.getElementById('editContent').value = data.posts[0]; // Use first post for editing
+                            document.getElementById('previewSection').style.display = 'block';
+                            showAlert(resultDiv, `Generated ${data.posts.length} posts successfully!`, 'success');
+                            updateStatusCounts();
+                        } else {
+                            showAlert(resultDiv, 'No content generated', 'warning');
+                        }
+                    } else {
+                        showAlert(resultDiv, data.error || 'Failed to generate content', 'danger');
+                    }
+                }
+            } catch (error) {
+                showAlert(resultDiv, 'Network error. Please try again.', 'danger');
+            } finally {
+                loading.classList.remove('show');
+                button.disabled = false;
+            }
+        }
+
+        // Update Post Content
+        async function updatePost() {
+            const content = document.getElementById('editContent').value;
+            const resultDiv = document.getElementById('generateResult');
+
+            if (!currentPostId) {
+                showAlert(resultDiv, 'No post to update', 'danger');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/update-post', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        post_id: currentPostId,
+                        content: content
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('postContent').textContent = content;
+                    showAlert(resultDiv, 'Post updated successfully!', 'success');
+                } else {
+                    showAlert(resultDiv, data.error || 'Failed to update post', 'danger');
+                }
+            } catch (error) {
+                showAlert(resultDiv, 'Network error. Please try again.', 'danger');
+            }
+        }
+
+        // Publish Post to Facebook
+        async function publishPost() {
+            const resultDiv = document.getElementById('publishResult');
+            const button = event.target;
+            const loading = button.querySelector('.loading');
+
+            if (!currentPostId) {
+                showAlert(resultDiv, 'No post to publish', 'danger');
+                return;
+            }
+
+            try {
+                loading.classList.add('show');
+                button.disabled = true;
+
+                const formData = new FormData();
+                formData.append('post_id', currentPostId);
+
+                const dateTime = document.getElementById('postDateTime').value;
+                if (dateTime) {
+                    formData.append('scheduled_time', dateTime);  // key = 'scheduled_time'
+                }
+                
+                if (selectedImage) {
+                    formData.append('image', selectedImage);
+                }
+
+                const response = await fetch('/api/publish-post', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('fbPostLink').href = data.fb_post_url;
+                    document.getElementById('resultsSection').style.display = 'block';
+                    document.getElementById('publishSuccess').classList.add('success-animation');
+
+                    requestAnimationFrame(() => {
+                        document.querySelector('#publishSuccess h5').innerText = 
+                            data.message.includes('scheduled')
+                                ? 'Post Scheduled Successfully!'
+                                : 'Post Published Successfully!';
+    
+                    document.querySelector('#publishSuccess p').innerText = 
+                        data.message.includes('scheduled')
+                            ? 'Your post has been scheduled on your Facebook page.'
+                            : 'Your post has been published to your Facebook page.';
+                    });
+                    
+                    showAlert(resultDiv, data.message || 'Post published successfully!', 'success');
+                    updateStatusCounts();
+                    
+                    // Clear image
+                    removeImage();
+                    
+                    // Scroll to results section
+                    document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    showAlert(resultDiv, data.error || 'Failed to publish post', 'danger');
+                }
+            } catch (error) {
+                showAlert(resultDiv, 'Network error. Please try again.', 'danger');
+            } finally {
+                loading.classList.remove('show');
+                button.disabled = false;
+            }
+        }
+
+
+
+        document.getElementById("postDateTime").addEventListener("change", function () {
+            const selectedDateTime = this.value;
+            console.log("Selected Date and Time: " + selectedDateTime);
+        });
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const now = new Date();
+
+            const year = now.getFullYear();
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            const day = now.getDate().toString().padStart(2, '0');
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+
+            const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+            const dateTimeInput = document.getElementById("postDateTime");
+            dateTimeInput.setAttribute("min", formattedDate);
+        });
+
+
+
+
+        // Update Status Counts
+        async function updateStatusCounts() {
+            try {
+                const [pagesResponse, generatedResponse, publishedResponse] = await Promise.all([
+                    fetch('/api/connected-pages'),
+                    fetch('/api/generated-posts'),
+                    fetch('/api/published-posts')
+                ]);
+
+                const pagesData = await pagesResponse.json();
+                const generatedData = await generatedResponse.json();
+                const publishedData = await publishedResponse.json();
+
+                document.getElementById('connectedPagesCount').textContent = pagesData.pages.length;
+                document.getElementById('generatedPostsCount').textContent = generatedData.posts.length;
+                document.getElementById('publishedPostsCount').textContent = publishedData.posts.length;
+            } catch (error) {
+                console.error('Error updating status counts:', error);
+            }
+        }
+
+        // Show Alert
+        function showAlert(container, message, type) {
+            container.innerHTML = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+        }
+
+        // Handle generation method switching
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStatusCounts();
+            
+            // Add event listeners for radio buttons
+            document.querySelectorAll('input[name="generationMethod"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    const simpleMode = document.getElementById('simpleMode');
+                    const advancedMode = document.getElementById('advancedMode');
+                    const enhancedMode = document.getElementById('enhancedMode');
+                    
+                    if (this.value === 'simple') {
+                        simpleMode.style.display = 'block';
+                        advancedMode.style.display = 'none';
+                        enhancedMode.style.display = 'none';
+                    } else if (this.value === 'advanced') {
+                        simpleMode.style.display = 'none';
+                        advancedMode.style.display = 'block';
+                        enhancedMode.style.display = 'none';
+                    } else if (this.value === 'enhanced') {
+                        simpleMode.style.display = 'none';
+                        advancedMode.style.display = 'none';
+                        enhancedMode.style.display = 'block';
+                    }
+                });
+            });
+        });
+
+        // Business Analysis Function
+        async function analyzeBusiness() {
+            const url = document.getElementById('businessUrl').value;
+            const resultDiv = document.getElementById('businessAnalysisResult');
+            const button = event.target;
+            const loading = button.querySelector('.loading');
+
+            if (!url) {
+                showAlert(resultDiv, 'Please enter a business website URL', 'danger');
+                return;
+            }
+
+            try {
+                loading.classList.add('show');
+                button.disabled = true;
+
+                const response = await fetch('/api/business-understanding', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url: url })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    const analysisHtml = `
+                        <div class="alert alert-success">
+                            <h6><i class="fas fa-check-circle me-2"></i>Business Analysis Complete</h6>
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <strong>Business Name:</strong> ${data.Name || 'Not found'}<br>
+                                    <strong>Industry:</strong> ${data.Industry || 'Not found'}<br>
+                                    <strong>Tone:</strong> ${data['Tone of voice'] || 'Not found'}
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Services:</strong><br>
+                                    <small>${data.Services || 'Not found'}</small>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <small class="text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Tip: Try a different website if some fields show "Not found". 
+                                    The analysis works best with business websites that have clear service descriptions.
+                                </small>
+                            </div>
+                            <button class="btn btn-sm btn-outline-primary mt-2" onclick="useBusinessAnalysis()">
+                                <i class="fas fa-magic me-1"></i>Use This Data for Content Generation
+                            </button>
+                        </div>
+                    `;
+                    resultDiv.innerHTML = analysisHtml;
+                } else {
+                    showAlert(resultDiv, data.error || 'Failed to analyze business website', 'danger');
+                }
+            } catch (error) {
+                showAlert(resultDiv, 'Network error. Please try again.', 'danger');
+            } finally {
+                loading.classList.remove('show');
+                button.disabled = false;
+            }
+        }
+
+        // Use Business Analysis Data
+        function useBusinessAnalysis() {
+            const resultDiv = document.getElementById('businessAnalysisResult');
+            const analysisData = resultDiv.querySelector('.alert-success');
+            
+            if (analysisData) {
+                // Extract data from the analysis result using text content
+                const content = analysisData.textContent;
+                
+                // Simple text extraction (this is a basic approach)
+                const businessNameMatch = content.match(/Business Name:\s*([^\n]+)/);
+                const industryMatch = content.match(/Industry:\s*([^\n]+)/);
+                const toneMatch = content.match(/Tone:\s*([^\n]+)/);
+                const servicesMatch = content.match(/Services:\s*([^\n]+)/);
+                
+                const businessName = businessNameMatch ? businessNameMatch[1].trim() : '';
+                const industry = industryMatch ? industryMatch[1].trim() : '';
+                const tone = toneMatch ? toneMatch[1].trim() : '';
+                const services = servicesMatch ? servicesMatch[1].trim() : '';
+
+                // Populate the enhanced mode fields
+                if (businessName && businessName !== 'Not found') document.getElementById('enhancedBusinessName').value = businessName;
+                if (industry && industry !== 'Not found') document.getElementById('enhancedIndustry').value = industry;
+                if (tone && tone !== 'Not found') document.getElementById('enhancedTone').value = tone.toLowerCase();
+                if (services && services !== 'Not found') document.getElementById('enhancedServices').value = services;
+
+                // Switch to enhanced mode
+                document.getElementById('enhancedMethod').checked = true;
+                document.getElementById('enhancedMethod').dispatchEvent(new Event('change'));
+
+                showAlert(resultDiv, 'Business data applied to content generation form!', 'success');
+            }
+        }
+
+        // Get Industry News
+        async function getIndustryNews() {
+            const industry = document.getElementById('newsIndustry').value;
+            const resultDiv = document.getElementById('newsResult');
+            const button = event.target;
+            const loading = button.querySelector('.loading');
+
+            if (!industry) {
+                showAlert(resultDiv, 'Please enter an industry for news', 'danger');
+                return;
+            }
+
+            try {
+                loading.classList.add('show');
+                button.disabled = true;
+
+                const response = await fetch('/api/news', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ industry: industry })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    const newsHtml = `
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-newspaper me-2"></i>Latest ${industry} News</h6>
+                            <ul class="list-group list-group-flush mt-2">
+                                ${data.map(headline => `<li class="list-group-item">${headline}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `;
+                    resultDiv.innerHTML = newsHtml;
+                } else {
+                    showAlert(resultDiv, data.error || 'Failed to get industry news', 'danger');
+                }
+            } catch (error) {
+                showAlert(resultDiv, 'Network error. Please try again.', 'danger');
+            } finally {
+                loading.classList.remove('show');
+                button.disabled = false;
+            }
+        }
+
+        // Create Weekly Schedule
+        async function createWeeklySchedule() {
+            const posts = document.getElementById('weeklyPosts').value.split('\n').filter(post => post.trim());
+            const frequency = parseInt(document.getElementById('postFrequency').value);
+            const preferredDays = Array.from(document.getElementById('preferredDays').selectedOptions).map(option => option.value);
+            const resultDiv = document.getElementById('weeklyPlannerResult');
+            const button = event.target;
+            const loading = button.querySelector('.loading');
+
+            if (posts.length === 0) {
+                showAlert(resultDiv, 'Please enter at least one post', 'danger');
+                return;
+            }
+
+            if (posts.length < frequency) {
+                showAlert(resultDiv, `You need at least ${frequency} posts for the selected frequency`, 'danger');
+                return;
+            }
+
+            try {
+                loading.classList.add('show');
+                button.disabled = true;
+
+                const response = await fetch('/api/weekly-planner', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        posts: posts,
+                        post_frequency: frequency,
+                        preferred_days: preferredDays
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    const scheduleHtml = `
+                        <div class="alert alert-success">
+                            <h6><i class="fas fa-calendar-check me-2"></i>Weekly Schedule Created</h6>
+                            <div class="row mt-3">
+                                ${Object.entries(data.schedule).map(([day, post]) => `
+                                    <div class="col-md-6 mb-2">
+                                        <strong>${day.charAt(0).toUpperCase() + day.slice(1)}:</strong>
+                                        <div class="small text-muted">${post || 'No post scheduled'}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                    resultDiv.innerHTML = scheduleHtml;
+                } else {
+                    showAlert(resultDiv, data.error || 'Failed to create weekly schedule', 'danger');
+                }
+            } catch (error) {
+                showAlert(resultDiv, 'Network error. Please try again.', 'danger');
+            } finally {
+                loading.classList.remove('show');
+                button.disabled = false;
+            }
+        }
+
+        // Get Weekly Schedule
+        async function getWeeklySchedule() {
+            const resultDiv = document.getElementById('weeklyPlannerResult');
+
+            try {
+                const response = await fetch('/api/weekly-planner');
+                const data = await response.json();
+
+                if (response.ok) {
+                    const scheduleHtml = `
+                        <div class="alert alert-secondary">
+                            <h6><i class="fas fa-calendar me-2"></i>Current Weekly Schedule</h6>
+                            <div class="row mt-3">
+                                ${Object.entries(data.schedule).map(([day, post]) => `
+                                    <div class="col-md-6 mb-2">
+                                        <strong>${day.charAt(0).toUpperCase() + day.slice(1)}:</strong>
+                                        <div class="small text-muted">${post || 'No post scheduled'}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                    resultDiv.innerHTML = scheduleHtml;
+                } else {
+                    showAlert(resultDiv, data.error || 'Failed to get weekly schedule', 'danger');
+                }
+            } catch (error) {
+                showAlert(resultDiv, 'Network error. Please try again.', 'danger');
+            }
+        }
+
+        // Image handling functions
+        let selectedImage = null;
+
+        // Handle image upload
+        document.getElementById('postImage').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) { // 5MB limit
+                    showAlert(document.getElementById('publishResult'), 'Image size must be less than 5MB', 'warning');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    selectedImage = file;
+                    document.getElementById('previewImg').src = e.target.result;
+                    document.getElementById('imagePreview').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Remove image
+        function removeImage() {
+            selectedImage = null;
+            document.getElementById('postImage').value = '';
+            document.getElementById('imagePreview').style.display = 'none';
+            document.getElementById('previewImg').src = '';
+        }
+    </script>
+</body>
+</html> 
